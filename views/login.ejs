@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+
+<div class="container text-center" style="width: 100%">
+  <div class="row align-items-center">
+    <div class="col"></div>
+    <div
+      class="col-8"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      "
+    >
+      <div class="content-login px-10">
+        <h1>Orquesta Filarmonica Universidad Distrital</h1>
+
+        <div>
+          <form method="post" action="/login">
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electronico</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col"></div>
+  </div>
+</div>
+
+<%- include('partials/endHeader') %>

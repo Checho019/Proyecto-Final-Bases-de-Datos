@@ -1,0 +1,144 @@
+<%- include('partials/header') %>
+
+<nav class="navbar navbar-expand-lg bg-primary">
+  <div class="container-fluid">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarText"
+      aria-controls="navbarText"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse px-3" id="navbarText">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Escudo_UD.svg/2118px-Escudo_UD.svg.png"
+          alt="Logo"
+          width="70"
+          height="70"
+          class="d-inline-block align-text-top mx-3"
+        />
+        <li class="nav-item"></li>
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#calendario"
+          aria-expanded="false"
+          aria-controls="collapseExample"
+        >
+          Calendario
+        </button>
+        <li class="nav-item"></li>
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#seleccion"
+          aria-expanded="false"
+          aria-controls="collapseExample"
+        >
+          Selección
+        </button>
+        <li class="nav-item"></li>
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#asistencia"
+          aria-expanded="false"
+          aria-controls="collapseExample"
+        >
+          Asistencia
+        </button>
+
+        <li class="nav-item"></li>
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#liquidacion"
+          aria-expanded="false"
+          aria-controls="collapseExample"
+        >
+          Liquidación
+        </button>
+      </ul>
+      <span class="navbar-text">
+        <p class="lead bold ml-5 pl-5 inline" id="hora"></p>
+      </span>
+    </div>
+  </div>
+</nav>
+
+<!-- Contenido -->
+<div class="row align-items-center text-center">
+  <div class="col"></div>
+  <div class="col-10">
+    <h1 class="my-3">Panel de administración</h1>
+    <div class="collapse my-3" id="calendario">
+      <div class="card card-body">Calendario wuwuwuwuwu</div>
+    </div>
+
+    <div class="collapse my-3" id="seleccion">
+      <div class="card card-body">seleccion wuwuwuwuwu</div>
+    </div>
+
+    <div class="collapse my-3" id="asistencia">
+      <div class="card card-body">asistencia wuwuwuwuwu</div>
+    </div>
+
+    <div class="collapse my-3" id="liquidacion">
+      <div class="card card-body">liquidacion wuwuwuwuwu</div>
+    </div>
+  </div>
+  <div class="col"></div>
+</div>
+
+<script>
+    // Funcion de tiempo
+    function mostrarHora() {
+    var fecha = new Date();
+    var hora = fecha.getHours();
+    var minutos = fecha.getMinutes();
+    var segundos = fecha.getSeconds();
+
+    // Asegurar que los valores tengan dos dígitos
+    if (hora < 10) {
+      hora = "0" + hora;
+    }
+    if (minutos < 10) {
+      minutos = "0" + minutos;
+    }
+    if (segundos < 10) {
+      segundos = "0" + segundos;
+    }
+    var horaActual = hora + ":" + minutos + ":" + segundos;
+    document.getElementById("hora").innerHTML =
+      mostrarFecha() + "  -  " + horaActual;
+  }
+    function mostrarFecha() {
+    var fecha = new Date();
+    var dia = fecha.getDate();
+    var mes = fecha.getMonth() + 1;
+    var anio = fecha.getFullYear();
+
+    dia = dia < 10 ? "0" + dia : dia;
+    mes = mes < 10 ? "0" + mes : mes;
+
+    var fechaActual = dia + "/" + mes + "/" + anio;
+    return fechaActual;
+  }
+    setInterval(mostrarHora, 1000);
+
+    // Habilitar o inhabilitar funcion de calendario
+    
+  
+
+</script>
+
+<%- include('partials/endHeader') %>
