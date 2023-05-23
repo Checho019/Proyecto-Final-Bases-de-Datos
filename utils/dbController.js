@@ -2,9 +2,9 @@ const oracledb = require('oracledb');
 
 // Configuración de conexión a la base de datos
 const dbConfig = {
-    user: 'PROYECTO',
-    password: '1234',
-    connectString: 'localhost:1521/XEXDB'
+  user: 'PROYECTO',
+  password: '1234',
+  connectString: 'localhost:1521/XEXDB'
 }
 
 // Crear Pool
@@ -25,8 +25,10 @@ const ejecutarQuery = async (sql, params) => {
   try {
     connection = await oracledb.getConnection();
     result = await connection.execute(sql, params);
+    await connection.commit();
   } catch (error) {
     console.error('Error al ejecutar la consulta:', error);
+    await connection.rollback()
   } finally {
     if (connection) {
       try {

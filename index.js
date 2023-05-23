@@ -3,6 +3,9 @@ const path = require('path')
 const bodyParser = require('body-parser');
 require('ejs')
 
+// Traer servicios
+const calendar = require('./services/calendario')
+
 const app = express()
 
 // Usuario Cordinador general
@@ -38,6 +41,27 @@ app.use((req, res, next) => {
 // Routes
 app.get('/', (req, res) => {
     res.render('index',{name:cordinador.name})
+})
+
+app.get('/calendarios', async (req, res) => {
+    const valores = await calendar.obtenerCalendario()
+    res.json(valores)
+})
+
+app.get('/cantidadactivos/:tipo', async (req,res) => {
+    const valores = await calendar.cuantosActivos(req.params.tipo)
+    res.json(valores)
+})
+
+app.get('/esactivo/:tipo', async (req,res) => {
+    const valores = await calendar.esActivo(req.params.tipo)
+    res.json(valores)
+})
+
+app.get('/inactivar/:obra/:calendario/:id', async (req,res) => {
+    const p = req.params
+    const valores = await calendar.inactivarCalendario(p.obra, p.calendario, p.id)
+    res.send('Todo ok')
 })
 
 app.listen(3000, (err) => {
