@@ -29,13 +29,23 @@ const inactivarCalendario = async (obra,calendario,id ) => {
 }
 
 // Extraer horas de calendarios de ensayo y funcion
-
+const retirarHoras = async () => {
+    let query = 'SELECT C.idtipocalen, consecalendario, desctipocalendario, idestado, titulo, to_char(fechainicio,\'YYYY-MM-DD\'), TO_CHAR(fechainicio,\'HH24\'), to_char(fechafin__,\'YYYY-MM-DD\'),TO_CHAR(fechafin__,\'HH24\') FROM calendario C JOIN tipocalendario T ON C.idtipocalen = T.idtipocalen JOIN obra O ON O.idobra = C.idobra WHERE O.idperido = 202301'
+    const resultado = await db.ejecutarQuery(query,[])
+    return resultado.rows
+}
 
 // Agregar calendario
+const agregarCalendario = async (obra,calendario,id,fechaI, fechaF) => {
+    let query = 'INSERT INTO calendario VALUES (:obra,:calendario,:id,\'Activo\',TO_DATE(:fechaI,\'DD/MM/YYYY HH24\'),TO_DATE(:fechaF,\'DD/MM/YYYY HH24\'))'
+    await db.ejecutarQuery(query, [obra,calendario,id,fechaI,fechaF])
+}
 
 module.exports = {
     obtenerCalendario,
     cuantosActivos,
     esActivo,
-    inactivarCalendario
+    inactivarCalendario,
+    agregarCalendario,
+    retirarHoras
 }

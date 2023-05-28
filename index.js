@@ -1,20 +1,23 @@
+// Librerias
 const express = require('express');
 const path = require('path')
 const bodyParser = require('body-parser');
 require('ejs')
 
-// Traer servicios
-const calendar = require('./services/calendario')
+// Controlladores
+const calendarRoutes = require('./routes/calendarioController')
 
+// Servicios
+const docentes = require('./services/docente')
+const estudiantes = require('./services/estudiante')
+
+const port = process.env.PORT || 3000
 const app = express()
-
-// Usuario Cordinador general
-const cordinador = {
-    email:'admin@gmail.com',
-    password:'1234',
-    name: 'John Doe'
+const u = {
+    nombre: 'juan',
+    apellido: 'xd'
 }
-
+app.set('user',u)
 
 // config
 app.set('view engine', 'ejs')
@@ -23,13 +26,18 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Middleware
-app.use((req, res, next) => {
-    return next()
+app.use( async (req, res, next) => {
+    return next();
     if (!app.get('auth')) {
-        if (req.method === 'POST'){
-            if (req.body.email == cordinador.email && req.body.password == cordinador.password){
-                app.set('auth',true)
+        if (req.method === 'POST') {
+            const user = await docentes(req.body.email, req.body.password);
+            console.log(user)
+            if (user.length > 0) {
+                app.set('auth', true)
+                app.set('user', user)
                 return res.redirect('/')
+            } else {
+                return res.render('login')
             }
         } else {
             return res.render('login')
@@ -39,32 +47,18 @@ app.use((req, res, next) => {
 })
 
 // Routes
+app.use('/calendario', calendarRoutes);
+
 app.get('/', (req, res) => {
-    res.render('index',{name:cordinador.name})
+    res.render('index', app.get('user').nombre )
 })
 
-app.get('/calendarios', async (req, res) => {
-    const valores = await calendar.obtenerCalendario()
-    res.json(valores)
+app.get('/estudiantes', async (req, res) => {
+    const r = await estudiantes.obtenerEstudiantes()
+    res.json(r)
 })
 
-app.get('/cantidadactivos/:tipo', async (req,res) => {
-    const valores = await calendar.cuantosActivos(req.params.tipo)
-    res.json(valores)
-})
-
-app.get('/esactivo/:tipo', async (req,res) => {
-    const valores = await calendar.esActivo(req.params.tipo)
-    res.json(valores)
-})
-
-app.get('/inactivar/:obra/:calendario/:id', async (req,res) => {
-    const p = req.params
-    const valores = await calendar.inactivarCalendario(p.obra, p.calendario, p.id)
-    res.send('Todo ok')
-})
-
-app.listen(3000, (err) => {
+app.listen(port, (err) => {
     if (err) {
         console.log('Error al arrancar el servidor' + err)
     } else {
