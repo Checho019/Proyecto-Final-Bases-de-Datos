@@ -1,6 +1,6 @@
 <%- include('partials/header') %>
 
-<nav class="navbar navbar-expand-lg bg-primary">
+<nav class="navbar navbar-expand-lg bg-black">
   <div class="container-fluid">
     <button
       class="navbar-toggler"
@@ -21,55 +21,91 @@
           width="70"
           height="70"
           class="d-inline-block align-text-top mx-3"
+          style="filter: invert(100%)"
         />
-        <li class="nav-item"></li>
+        <li class="nav-item mx-2"></li>
         <button
-          class="btn btn-primary"
+          class="btn btn-dark my-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#calendario"
           aria-expanded="false"
           aria-controls="collapseExample"
+          id="btn-calendario"
+          disabled
         >
           Calendario
         </button>
-        <li class="nav-item"></li>
+        <li class="nav-item mx-2"></li>
         <button
-          class="btn btn-primary"
+          class="btn btn-dark my-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#seleccion"
           aria-expanded="false"
           aria-controls="collapseExample"
+          id="btn-seleccion"
+          disabled
         >
           Selección
         </button>
-        <li class="nav-item"></li>
+        <li class="nav-item mx-2"></li>
         <button
-          class="btn btn-primary"
+          class="btn btn-dark my-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#asistencia"
           aria-expanded="false"
           aria-controls="collapseExample"
+          id="btn-asistencia"
+          disabled
         >
           Asistencia
         </button>
 
-        <li class="nav-item"></li>
+        <li class="nav-item mx-2"></li>
         <button
-          class="btn btn-primary"
+          class="btn btn-dark my-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#liquidacion"
           aria-expanded="false"
           aria-controls="collapseExample"
+          id="btn-liquidacion"
+          disabled
         >
           Liquidación
         </button>
       </ul>
-      <span class="navbar-text">
-        <p class="lead bold ml-5 pl-5 inline" id="hora"></p>
+      <span class="navbar-text text-light">
+        <ul class="mb-1">
+          <li class="nav-item" style="list-style-type: none">
+            <ul class="navbar-nav me-auto mb-lg-0">
+              <li class="nav-item mx-2">
+                <input
+                  type="date"
+                  class="form-control"
+                  id="input-fecha"
+                  value="2023-05-31"
+                />
+              </li>
+              <li class="nav-item mx-2">
+                <input
+                  type="time"
+                  class="form-control"
+                  id="input-hora"
+                  value="00:00"
+                />
+              </li>
+              <li class="nav-item mx-2">
+                <button class="btn btn-dark" id="btn-fecha">Cambiar</button>
+              </li>
+            </ul>
+          </li>
+          <li class="text-center" style="list-style-type: none">
+            <p class="lead" id="hora" style="margin-bottom: 0px"><%=nombre%></p>
+          </li>
+        </ul>
       </span>
     </div>
   </div>
@@ -80,12 +116,62 @@
   <div class="col"></div>
   <div class="col-10">
     <h1 class="my-3">Panel de administración</h1>
+
+    <!-- Pestaña de calendario -->
     <div class="collapse my-3" id="calendario">
-      <div class="card card-body">Calendario wuwuwuwuwu</div>
+      <div class="card card-body" id="calenadio-body">
+        <div class="container text-center m-3">
+          <div class="row">
+            <div class="col">
+              <select class="form-select" id="form-cal">
+                <option value="1">Planeación</option>
+                <option value="2">Convocatoria</option>
+                <option value="3">Selección</option>
+                <option value="4">Ensayo</option>
+                <option value="5">Función</option>
+              </select>
+            </div>
+            <div class="col">
+              <input
+                type="date"
+                class="form-control"
+                id="fecha-inicio"
+                value="2023-05-31"
+              />
+            </div>
+            <div class="col">
+              <input
+                type="time"
+                class="form-control"
+                id="hora-inicio"
+                value="00:00"
+              />
+            </div>
+            <div class="col">
+              <button class="btn btn-dark" id="form-calendario">
+                Insertar
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn btn-dark" disabled>Crear Calendario</button>
+            </div>
+            <div class="col">
+              <button class="btn btn-dark" id="btn-fin-cal">
+                Terminar Calendario
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="calendarios"></div>
+      </div>
     </div>
 
     <div class="collapse my-3" id="seleccion">
-      <div class="card card-body">seleccion wuwuwuwuwu</div>
+      <div class="card card-body">
+        <div id="instrumentos"></div>
+        <div id="candidatos"></div>
+      </div>
     </div>
 
     <div class="collapse my-3" id="asistencia">
@@ -100,45 +186,192 @@
 </div>
 
 <script>
-    // Funcion de tiempo
-    function mostrarHora() {
-    var fecha = new Date();
-    var hora = fecha.getHours();
-    var minutos = fecha.getMinutes();
-    var segundos = fecha.getSeconds();
+  // INICIO Y CALENDARIO -----------------------------
+  // Activacion de menu 'Calendario'
+  const activarCalendario = async () => {
+    var resp = 0;
+    await fetch("http://localhost:3000/calendario/esactivo/planeacion")
+      .then((response) => (resp = response.json()))
+      .then((resp) => {
+        const btnCalendario = document.getElementById("form-calendario");
+        const btnTerminar = document.getElementById("btn-fin-cal");
+        document.getElementById("btn-calendario").removeAttribute("disabled");
+        if (resp.val) {
+          btnCalendario.setAttribute("disabled", null);
+          btnTerminar.setAttribute("disabled", null);
+        } else {
+          console.log("Activar calendario");
+          btnCalendario.removeAttribute("disabled");
+        }
+      });
+  };
 
-    // Asegurar que los valores tengan dos dígitos
-    if (hora < 10) {
-      hora = "0" + hora;
-    }
-    if (minutos < 10) {
-      minutos = "0" + minutos;
-    }
-    if (segundos < 10) {
-      segundos = "0" + segundos;
-    }
-    var horaActual = hora + ":" + minutos + ":" + segundos;
+  // Traer lista de horarios
+  const listaCal = () => {
+    fetch("http://localhost:3000/calendario/retirarhoras")
+      .then((response) => response.json())
+      .then((response) => {
+        const contenido = document.getElementById("calendarios");
+        contenido.innerHTML = "";
+        response.rows.forEach((element) => {
+          let fechaInicio = dayjs(element[5] + " " + element[6]);
+          let fechaFin = dayjs(element[7] + " " + element[8]);
+          contenido.innerHTML += `
+          <hr>
+          <div class="container text-center m-3">
+            <div class="row ">
+              <div class="col-1">
+                ${element[1]}
+                </div>
+                <div class="col-2">
+                  ${element[2]}
+                </div>
+                <div class="col-2">
+                  ${element[3]}
+                </div>
+                <div class="col-3">
+                  ${fechaInicio.format("DD/MM/YYYY HH:mm")}
+                </div>
+                <div class="col-3">
+                  ${fechaFin.format("DD/MM/YYYY HH:mm")}
+                </div>
+              </div>
+          </div>
+          `;
+        });
+      });
+  };
+  const btnCalendario = document.getElementById("btn-calendario");
+  btnCalendario.addEventListener("click", (event) => {
+    listaCal();
+  });
+
+  // Insertar horario
+  const formCalendario = document.getElementById("form-calendario");
+  formCalendario.addEventListener("click", async (event) => {
+    let headersList = {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+    };
+
+    let fechaInicio = dayjs(
+      document.getElementById("fecha-inicio").value +
+        " " +
+        document.getElementById("hora-inicio").value
+    );
+    let idCal = document.getElementById("form-cal").value;
+    const dias = [1, 7, 7, 0, 0];
+    const horas = idCal < 4 ? 0 : 2;
+    let fechaFin = fechaInicio.add(dias[idCal - 1], "day").add(horas, "hour");
+
+    let bodyContent = JSON.stringify({
+      calendario: idCal,
+      fechaInicio: fechaInicio.format("DD/MM/YYYY HH"),
+      fechaFin: fechaFin.format("DD/MM/YYYY HH"),
+    });
+
+    let response = await fetch(
+      "http://localhost:3000/calendario/agregarcalendario",
+      {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      }
+    )
+      .then((response) => response.text())
+      .then((res) => console.log("Peticion enviada"));
+    listaCal();
+  });
+  // Cancelar todo
+  document.getElementById('btn-calendario').setAttribute('disabled',null)
+  document.getElementById('btn-seleccion').setAttribute('disabled',null)
+  document.getElementById('btn-asistencia').setAttribute('disabled',null)
+  document.getElementById('btn-liquidacion').setAttribute('disabled',null)
+
+  // Cambiar hora
+  localStorage.setItem("nombre", document.getElementById("hora").innerHTML);
+  const bntFecha = document.getElementById("btn-fecha");
+  bntFecha.addEventListener("click", async (event) => {
+    let fecha = dayjs(
+      document.getElementById("input-fecha").value +
+        " " +
+        document.getElementById("input-hora").value
+    );
+    localStorage.setItem("fecha", fecha);
     document.getElementById("hora").innerHTML =
-      mostrarFecha() + "  -  " + horaActual;
-  }
-    function mostrarFecha() {
-    var fecha = new Date();
-    var dia = fecha.getDate();
-    var mes = fecha.getMonth() + 1;
-    var anio = fecha.getFullYear();
+      localStorage.getItem("nombre") + " | " + fecha.format("DD/MM/YYYY HH:mm");
+    activarCalendario();
+    let actividadActual = await dentroDeFecha();
+    console.log(actividadActual);
+    // Activacion de pestañas menos calendario
+    if (actividadActual) {
+      if (actividadActual[0] == 3) {
+        document.getElementById('btn-seleccion').removeAttribute('disabled')
+        document.getElementById('btn-asistencia').setAttribute('disabled',null)
+        document.getElementById('btn-liquidacion').setAttribute('disabled',null)
+      } else if (actividadActual[0] > 3){
+        document.getElementById('btn-asistencia').removeAttribute('disabled')
+        document.getElementById('btn-seleccion').setAttribute('disabled',null)
+        document.getElementById('btn-liquidacion').setAttribute('disabled',null)
+      }
+    } else {
+      // FALTA ESTA VAINA QUE SE ACTIVE CUANDO ESTA POR DELANTE DE TODOS LOS CALENDARIOS
+      if (document.getElementById("btn-fin-cal").hasAttribute('disabled')){
+        document.getElementById('btn-liquidacion').removeAttribute('disabled')
+        document.getElementById('btn-seleccion').setAttribute('disabled',null)
+        document.getElementById('btn-asistencia').setAttribute('disabled',null)
+      }
+    }
+  });
 
-    dia = dia < 10 ? "0" + dia : dia;
-    mes = mes < 10 ? "0" + mes : mes;
+  // Finalizar ciclo horario y convocatoria
+  const inactivar = async (tipo, consec) => {
+    let headersList = {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+    };
+    let bodyContent = JSON.stringify({
+      calendario: tipo,
+      id: consec,
+    });
 
-    var fechaActual = dia + "/" + mes + "/" + anio;
-    return fechaActual;
-  }
-    setInterval(mostrarHora, 1000);
+    let response = await fetch("http://localhost:3000/calendario/inactivar", {
+      method: "POST",
+      body: bodyContent,
+      headers: headersList,
+    })
+      .then((response) => response.text())
+      .then((res) => console.log("Peticion enviada"));
+  };
+  const btnfinCal = document.getElementById("btn-fin-cal");
+  btnfinCal.addEventListener("click", async (event) => {
+    inactivar(1, 0);
+    inactivar(2, 0);
+    location.reload();
+  });
 
-    // Habilitar o inhabilitar funcion de calendario
-    
-  
+  // Validar que la fecha ingresada este dentro de una fecha ya establecida
+  const dentroDeFecha = async () => {
+    const retorno = await fetch("http://localhost:3000/calendario/retirarhoras")
+      .then((response) => response.json())
+      .then((response) => {
+        let fecha = dayjs(localStorage.getItem("fecha"));
+        lista = response.rows.filter((element) => element[3] == "Activo");
+        let ret = lista.find((element) => {
+          // Comparar fechas
+          let fechaInicio = dayjs(element[5] + " " + element[6]);
+          let fechaFin = dayjs(element[7] + " " + element[8]);
 
+          if (fechaInicio.isBefore(fecha) && fechaFin.isAfter(fecha)) {
+            return true;
+          }
+        });
+        return ret;
+      });
+    return retorno;
+  };
+
+  // SELECCION -----------------------------
 </script>
 
 <%- include('partials/endHeader') %>

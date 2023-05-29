@@ -6,16 +6,17 @@ require('ejs')
 
 // Controlladores
 const calendarRoutes = require('./routes/calendarioController')
+const instrumentoRoutes = require('./routes/instrumentoController')
+const estudianteRoutes = require('./routes/estudianteController')
 
 // Servicios
 const docentes = require('./services/docente')
-const estudiantes = require('./services/estudiante')
 
 const port = process.env.PORT || 3000
 const app = express()
 const u = {
-    nombre: 'juan',
-    apellido: 'xd'
+    nombre: 'Sergio',
+    apellido: 'Duarte'
 }
 app.set('user',u)
 
@@ -25,7 +26,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Middleware
+// Middleware de autenticacion
 app.use( async (req, res, next) => {
     return next();
     if (!app.get('auth')) {
@@ -46,18 +47,21 @@ app.use( async (req, res, next) => {
     next()
 })
 
-// Routes
+// Calendario Routes
 app.use('/calendario', calendarRoutes);
 
+// Instrumento Routes
+app.use('/instrumento', instrumentoRoutes)
+
+// 
+app.use('/estudiante', estudianteRoutes)
+
+// Index
 app.get('/', (req, res) => {
-    res.render('index', app.get('user').nombre )
+    res.render('index',{nombre:app.get('user').nombre + ' ' + app.get('user').apellido})
 })
 
-app.get('/estudiantes', async (req, res) => {
-    const r = await estudiantes.obtenerEstudiantes()
-    res.json(r)
-})
-
+// Servidor
 app.listen(port, (err) => {
     if (err) {
         console.log('Error al arrancar el servidor' + err)

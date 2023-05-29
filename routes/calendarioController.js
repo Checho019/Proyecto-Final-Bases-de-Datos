@@ -15,19 +15,18 @@ router.get('/cantidadactivos/:tipo', async (req,res) => {
 
 router.get('/esactivo/:tipo', async (req,res) => {
     const valores = await calendar.esActivo(req.params.tipo)
-    res.json(valores)
+    res.json({val:valores})
 })
 
 router.post('/inactivar', async (req,res) => {
     const p = req.body
-    console.log(p)
-    await calendar.inactivarCalendario(p.obra, p.calendario, p.id)
+    await calendar.inactivarCalendario(p.calendario, p.id)
     await res.sendStatus(202)
 })
 
 router.post('/agregarcalendario', async (req, res) => {
     const p = req.body
-    await calendar.agregarCalendario(p.obra, p.calendario, p.id, p.fechaInicio, p.fechaFin)
+    await calendar.agregarCalendario(p.calendario, p.fechaInicio, p.fechaFin)
     res.sendStatus(201)
 })
 
