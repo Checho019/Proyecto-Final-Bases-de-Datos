@@ -167,9 +167,9 @@
       </div>
     </div>
 
+    <!-- Pestaña candidatos -->
     <div class="collapse my-3" id="seleccion">
       <div class="card card-body">
-        <div id="instrumentos"></div>
         <div id="candidatos"></div>
       </div>
     </div>
@@ -282,11 +282,6 @@
       .then((res) => console.log("Peticion enviada"));
     listaCal();
   });
-  // Cancelar todo
-  document.getElementById('btn-calendario').setAttribute('disabled',null)
-  document.getElementById('btn-seleccion').setAttribute('disabled',null)
-  document.getElementById('btn-asistencia').setAttribute('disabled',null)
-  document.getElementById('btn-liquidacion').setAttribute('disabled',null)
 
   // Cambiar hora
   localStorage.setItem("nombre", document.getElementById("hora").innerHTML);
@@ -306,20 +301,28 @@
     // Activacion de pestañas menos calendario
     if (actividadActual) {
       if (actividadActual[0] == 3) {
-        document.getElementById('btn-seleccion').removeAttribute('disabled')
-        document.getElementById('btn-asistencia').setAttribute('disabled',null)
-        document.getElementById('btn-liquidacion').setAttribute('disabled',null)
-      } else if (actividadActual[0] > 3){
-        document.getElementById('btn-asistencia').removeAttribute('disabled')
-        document.getElementById('btn-seleccion').setAttribute('disabled',null)
-        document.getElementById('btn-liquidacion').setAttribute('disabled',null)
+        document.getElementById("btn-seleccion").removeAttribute("disabled");
+        document
+          .getElementById("btn-asistencia")
+          .setAttribute("disabled", null);
+        document
+          .getElementById("btn-liquidacion")
+          .setAttribute("disabled", null);
+      } else if (actividadActual[0] > 3) {
+        document.getElementById("btn-asistencia").removeAttribute("disabled");
+        document.getElementById("btn-seleccion").setAttribute("disabled", null);
+        document
+          .getElementById("btn-liquidacion")
+          .setAttribute("disabled", null);
       }
     } else {
       // FALTA ESTA VAINA QUE SE ACTIVE CUANDO ESTA POR DELANTE DE TODOS LOS CALENDARIOS
-      if (document.getElementById("btn-fin-cal").hasAttribute('disabled')){
-        document.getElementById('btn-liquidacion').removeAttribute('disabled')
-        document.getElementById('btn-seleccion').setAttribute('disabled',null)
-        document.getElementById('btn-asistencia').setAttribute('disabled',null)
+      if (document.getElementById("btn-fin-cal").hasAttribute("disabled")) {
+        document.getElementById("btn-liquidacion").removeAttribute("disabled");
+        document.getElementById("btn-seleccion").setAttribute("disabled", null);
+        document
+          .getElementById("btn-asistencia")
+          .setAttribute("disabled", null);
       }
     }
   });
@@ -372,6 +375,51 @@
   };
 
   // SELECCION -----------------------------
+  const btnSeleccion = document.getElementById("btn-seleccion");
+  btnSeleccion.addEventListener("click", async (event) => {
+    fetch("http://localhost:3000/instrumento/")
+      .then((response) => response.json())
+      .then((response) => {
+        const contenido = document.getElementById("candidatos");
+        contenido.innerHTML = "";
+        response.rows.forEach((element) => {
+          contenido.innerHTML += `
+          <div class="container text-center my-4 form-check" id="${element[0]}"></div>
+          `;
+          document.getElementById(element[0]).innerHTML = ""
+        });
+      });
+
+    fetch("http://localhost:3000/estudiante/")
+      .then((response) => response.json())
+      .then((response) => {
+        response.rows.forEach((element) => {
+          const container = document.getElementById(element[5]);
+          container.innerHTML += `
+          <div class="row">
+            <div class="col">
+              <input class="form-check-input" type="radio" name="${element[5]}" id="flexRadioDefault1">  
+            </div>
+            <div class="col">
+              ${element[0]}
+            </div>
+            <div class="col">
+              ${element[1] + " " + element[2]}
+            </div>
+            <div class="col">
+              ${element[4] + " - " + element[3]}
+            </div>
+            <div class="col">
+              ${element[5]}
+            </div>
+            <div class="col">
+              ${element[6]}
+            </div>
+          </div>
+          `;
+        });
+      });
+  });
 </script>
 
 <%- include('partials/endHeader') %>

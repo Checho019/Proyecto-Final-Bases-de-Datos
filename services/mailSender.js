@@ -3,7 +3,7 @@ const sendEmail = async (lista) => {
     // Crear Headers
     var myHeaders = new Headers();
     myHeaders.append("accept", "application/json");
-    myHeaders.append("api-key", "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");
+    myHeaders.append();
     myHeaders.append("content-type", "application/json");
 
     // Enciar correo por cada persona 

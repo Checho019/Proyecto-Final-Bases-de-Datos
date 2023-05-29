@@ -25,9 +25,9 @@ const obtenerEstudiantes = async () => {
     + 'JOIN unidad U2 ON U.uni_codunidad = U2.codunidad '
     + 'JOIN convocatoriaestudiante C ON C.codestudiante = E.codestudiante '
     + 'JOIN instrumento I ON I.idinstrumento = C.idinstrumento '
-    + 'ORDER BY calificacion DESC'
+    + 'ORDER BY nominstrumento ASC, calificacion DESC'
     const resultado = await db.ejecutarQuery(query,[])
-    return resultado.rows
+    return resultado
 }
 
 // Agregar estudiante a participantes (Seleccion)

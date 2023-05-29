@@ -8,7 +8,7 @@ const obtenerInstrumentos = async () => {
     + 'FROM instrumento I ' 
     + 'JOIN obrainstrumento O ON I.idinstrumento = O.idinstrumento WHERE O.idobra = 3'
     const resultado = await db.ejecutarQuery(query,[])
-    return resultado.rows
+    return resultado
 }
 
 module.exports = {

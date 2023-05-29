@@ -1,4 +1,4 @@
-const instrumentos = require('../services/estudiante')
+const estudiantes = require('../services/estudiante')
 const express = require('express');
 
 const router = express.Router();
