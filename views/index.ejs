@@ -617,7 +617,7 @@
   // Traer estudiantes con electivas validas
   const btnLiquidacion = document.getElementById("btn-liquidacion");
   btnLiquidacion.addEventListener("click", async (event) => {
-    await fetch("http://localhost:3000/estudiante/electiva")
+    await fetch("http://localhost:3000/estudiante/electiva/true")
       .then((response) => response.json())
       .then((response) => {
         const container = document.getElementById("electivas");
@@ -666,15 +666,25 @@
   });
 
   // Enviar correos
-  const btnElectiva = document.getElementById('btn-electivas')
-  btnElectiva.addEventListener('click', (event) => {
-    
-  })
+  const btnElectiva = document.getElementById("btn-electivas");
+  btnElectiva.addEventListener("click", async (event) => {
+    await fetch("http://localhost:3000/estudiante/electiva/false")
+      .then((response) => response.json())
+      .then((response) => {
+        fetch("http://localhost:3000/email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ estudiantes: response.rows })
+        });
+      });
+  });
 
   // Generar PDF
   const btnViaticos = document.getElementById("btn-viaticos");
   btnViaticos.addEventListener("click", async () => {
-    let date = dayjs(localStorage.getItem('fecha'))
+    let date = dayjs(localStorage.getItem("fecha"));
     let html = `
     <html>
     <head>
@@ -688,7 +698,9 @@
             <hr>
             ${document.getElementById("electivas").innerHTML}
             <hr>
-            <p> Fecha y hora de expedición: ${date.format('DD/MM/YYYY HH:mm')} </p>
+            <p> Fecha y hora de expedición: ${date.format(
+              "DD/MM/YYYY HH:mm"
+            )} </p>
           </div>
       </div>
     </body>
@@ -717,7 +729,6 @@
         console.error("Error al obtener el PDF:", error);
       });
   });
-
 </script>
 
 <%- include('partials/endHeader') %>

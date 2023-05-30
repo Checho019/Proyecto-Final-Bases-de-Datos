@@ -31,8 +31,12 @@ router.post('/asistencia', async (req,res) => {
     res.sendStatus(202)
 })
 
-router.get('/electiva' , async (req,res) => {
-    res.json(await estudiantes.estudiantesElectiva())
+router.get('/electiva/:todos' , async (req,res) => {
+    if (req.params.todos == 'true'){
+        res.json(await estudiantes.estudiantesElectiva(true))
+    } else {
+        res.json(await estudiantes.estudiantesElectiva(false))
+    }
 })
 
 module.exports = router
