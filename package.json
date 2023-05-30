@@ -4,7 +4,8 @@
     "dayjs": "^1.11.7",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "oracledb": "^5.5.0"
+    "oracledb": "^5.5.0",
+    "puppeteer": "^20.4.0"
   },
   "name": "expressbd",
   "version": "1.0.0",

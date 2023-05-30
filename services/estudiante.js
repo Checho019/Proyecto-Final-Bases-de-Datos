@@ -82,12 +82,13 @@ const llenarTodaAsistencia = async () => {
 
 // Estudiantes que han aprovado la condicion de electiva
 const estudiantesElectiva = async () => {
-    let query = 'SELECT E.codestudiante, nombre, apellido, correo, nomunidad '
+    let query = 'SELECT E.codestudiante, nombre, apellido, correo, nomunidad, count(idtipocalen)*2 '
     + 'FROM estudiante E '
     + 'JOIN unidad U ON E.codunidad = U.codunidad '
     + 'JOIN participacionestudiante P ON P.codestudiante = E.codestudiante '
+    + 'WHERE idtipocalen = 4 OR idtipocalen = 5 '
     + 'GROUP BY E.codestudiante, nombre, apellido, correo, nomunidad '
-    + 'HAVING COUNT(idobra) = ' 
+    + 'HAVING COUNT(idobra) <= ' 
     + '(SELECT count(idobra) FROM calendario WHERE idtipocalen = 4 OR idtipocalen = 5)'
     const result = await db.ejecutarQuery(query,[])
     return result;
