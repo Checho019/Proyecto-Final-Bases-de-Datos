@@ -14,13 +14,9 @@ const estudianteRoutes = require('./routes/estudianteController')
 const docentes = require('./services/docente')
 const mailSender = require('./services/mailSender')
 
+// Servidor
 const port = process.env.PORT || 3000
 const app = express()
-const u = {
-    nombre: 'Sergio',
-    apellido: 'Duarte'
-}
-app.set('user', u)
 
 // config
 app.set('view engine', 'ejs')
@@ -30,14 +26,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Middleware de autenticacion
 app.use(async (req, res, next) => {
-    return next();
     if (!app.get('auth')) {
         if (req.method === 'POST') {
             const user = await docentes(req.body.email, req.body.password);
             console.log(user)
             if (user.length > 0) {
                 app.set('auth', true)
-                app.set('user', user)
+                app.set('nombre', user[0][0] + " " + user[0][1])
                 return res.redirect('/')
             } else {
                 return res.render('login')
@@ -60,7 +55,7 @@ app.use('/estudiante', estudianteRoutes)
 
 // Index
 app.get('/', (req, res) => {
-    res.render('index', { nombre: app.get('user').nombre + ' ' + app.get('user').apellido })
+    res.render('index', { nombre: app.get('nombre') })
 })
 
 // Generador de pdf

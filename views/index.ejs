@@ -372,8 +372,15 @@
         .then((response) => response.json())
         .then((response) => (b = response));
 
+        if (!b){
+          return;
+        }
+        let f1 = dayjs(localStorage.getItem('fecha'))
+        let f2 = dayjs(localStorage.getItem('final'))
+
+
       if (
-        b &&
+        f2.isBefore(f1) &&
         document.getElementById("btn-fin-cal").hasAttribute("disabled")
       ) {
         document.getElementById("btn-liquidacion").removeAttribute("disabled");
@@ -417,6 +424,12 @@
       .then((response) => response.json())
       .then((response) => {
         let fecha = dayjs(localStorage.getItem("fecha"));
+
+        let r = response.rows[response.rows.length - 1];
+        let f = dayjs(r[7] + ' ' + r[8])
+        localStorage.setItem('final',f)
+
+        
         lista = response.rows.filter((element) => element[3] == "Activo");
         let ret = lista.find((element) => {
           // Comparar fechas

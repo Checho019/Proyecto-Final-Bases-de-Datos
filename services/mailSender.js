@@ -3,14 +3,14 @@ const sendEmail = async (lista) => {
     // Crear Headers
     var myHeaders = new Headers();
     myHeaders.append("accept", "application/json");
-    myHeaders.append("api-key", );
+    // myHeaders.append();
     myHeaders.append("content-type", "application/json");
 
     // Enciar correo por cada persona 
     await lista.forEach(async element => {
 
         let codigo = element[0]
-        let nombre = element[1] + element[2]
+        let nombre = element[1] + ' ' + element[2]
         let email = element[3]
         let proyecto = element[4]
         let text = `El estudiante ${nombre} con código ${codigo} ha cumplido 
