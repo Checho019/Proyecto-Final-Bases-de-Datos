@@ -11,8 +11,7 @@ router.get('/', async (req, res) => {
 
 router.post('/agregar', async (req, res) => {
     const p = req.body
-    console.log(p)
-    await estudiantes.EstudianteParticipa(p.cod, p.cal)
+    await estudiantes.estudianteParticipa(p.cod, p.cal)
     res.sendStatus(201)
 })
 
@@ -24,6 +23,12 @@ router.get('/participantes', async (req, res) => {
 router.get('/llenado', async (req,res) => {
     await estudiantes.llenarTodaAsistencia()
     res.sendStatus(201)
+})
+
+router.post('/asistencia', async (req,res) => {
+    const p = req.body
+    await estudiantes.asistencia(p.cod, p.cal, p.tipo)
+    res.sendStatus(202)
 })
 
 module.exports = router

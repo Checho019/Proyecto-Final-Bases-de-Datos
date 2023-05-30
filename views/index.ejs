@@ -119,10 +119,11 @@
 
     <!-- Pestaña de calendario -->
     <div class="collapse my-3" id="calendario">
-      <div class="card card-body" id="calenadio-body">
+      <div class="card card-body text-center" id="calenadio-body">
+        <h2>Calendario</h2>
         <div class="container text-center m-3">
           <div class="row">
-            <div class="col">
+            <div class="col-2">
               <select class="form-select" id="form-cal">
                 <option value="1">Planeación</option>
                 <option value="2">Convocatoria</option>
@@ -147,15 +148,15 @@
                 value="00:00"
               />
             </div>
-            <div class="col">
+            <div class="col-1">
               <button class="btn btn-dark" id="form-calendario">
                 Insertar
               </button>
             </div>
-            <div class="col">
+            <div class="col-2">
               <button class="btn btn-dark" disabled>Crear Calendario</button>
             </div>
-            <div class="col">
+            <div class="col-3">
               <button class="btn btn-dark" id="btn-fin-cal">
                 Terminar Calendario
               </button>
@@ -169,13 +170,38 @@
 
     <!-- Pestaña candidatos -->
     <div class="collapse my-3" id="seleccion">
-      <div class="card card-body">
+      <div class="card card-body text-center">
+        <h2>Selección</h2>
+        <hr />
         <div id="candidatos"></div>
+        <div class="row">
+          <div class="col">
+            <button class="btn btn-dark" id="form-seleccion">
+              Seleccionar
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
+    <!-- Pestaña asistencia -->
     <div class="collapse my-3" id="asistencia">
-      <div class="card card-body">asistencia wuwuwuwuwu</div>
+      <div class="card card-body">
+        <h2 id="titulo-asistencia">Asistencia</h2>
+        <div id="participantes"></div>
+        <div class="row">
+          <div class="col">
+            <button class="btn btn-dark my-2" id="form-asistencia">
+              Finalizar
+            </button>
+          </div>
+          <div class="col">
+            <button class="btn btn-dark my-2" id="form-llenar-asistencia">
+              Llenar todo
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="collapse my-3" id="liquidacion">
@@ -186,7 +212,7 @@
 </div>
 
 <script>
-  // INICIO Y CALENDARIO -----------------------------
+  // ---------- INICIO Y CALENDARIO ----------------
   // Activacion de menu 'Calendario'
   const activarCalendario = async () => {
     var resp = 0;
@@ -297,9 +323,11 @@
       localStorage.getItem("nombre") + " | " + fecha.format("DD/MM/YYYY HH:mm");
     activarCalendario();
     let actividadActual = await dentroDeFecha();
-    console.log(actividadActual);
+
     // Activacion de pestañas menos calendario
     if (actividadActual) {
+      localStorage.setItem("actividadTipo", actividadActual[0]);
+      localStorage.setItem("actividadId", actividadActual[1]);
       if (actividadActual[0] == 3) {
         document.getElementById("btn-seleccion").removeAttribute("disabled");
         document
@@ -309,15 +337,22 @@
           .getElementById("btn-liquidacion")
           .setAttribute("disabled", null);
       } else if (actividadActual[0] > 3) {
+        document.getElementById("titulo-asistencia").innerHTML =
+          "Asistencia: " + actividadActual[5];
         document.getElementById("btn-asistencia").removeAttribute("disabled");
         document.getElementById("btn-seleccion").setAttribute("disabled", null);
         document
           .getElementById("btn-liquidacion")
           .setAttribute("disabled", null);
-      }
+      } 
     } else {
-      // FALTA ESTA VAINA QUE SE ACTIVE CUANDO ESTA POR DELANTE DE TODOS LOS CALENDARIOS
-      if (document.getElementById("btn-fin-cal").hasAttribute("disabled")) {
+
+      var b = false;
+      await fetch("http://localhost:3000/calendario/ningunoactivo")
+      .then((response) => response.json())
+      .then((response) => b = response)
+
+      if (b && document.getElementById("btn-fin-cal").hasAttribute("disabled")) {
         document.getElementById("btn-liquidacion").removeAttribute("disabled");
         document.getElementById("btn-seleccion").setAttribute("disabled", null);
         document
@@ -374,7 +409,8 @@
     return retorno;
   };
 
-  // SELECCION -----------------------------
+  // --------------- SELECCIÓN ---------------------
+  // Mostrar estudiantes
   const btnSeleccion = document.getElementById("btn-seleccion");
   btnSeleccion.addEventListener("click", async (event) => {
     fetch("http://localhost:3000/instrumento/")
@@ -384,9 +420,9 @@
         contenido.innerHTML = "";
         response.rows.forEach((element) => {
           contenido.innerHTML += `
-          <div class="container text-center my-4 form-check" id="${element[0]}"></div>
+          <div class="container text-center border border-2 rounded my-3 form-check" id="${element[0]}"></div>
           `;
-          document.getElementById(element[0]).innerHTML = ""
+          document.getElementById(element[0]).innerHTML = "";
         });
       });
 
@@ -396,23 +432,25 @@
         response.rows.forEach((element) => {
           const container = document.getElementById(element[5]);
           container.innerHTML += `
-          <div class="row">
-            <div class="col">
-              <input class="form-check-input" type="radio" name="${element[5]}" id="flexRadioDefault1">  
+          <div class="row align-items-center p-2">
+            <div class="col-1">
+              <input class="form-check-input" type="radio" name="${
+                element[5]
+              }" value="${element[0]}">  
             </div>
-            <div class="col">
+            <div class="col-2">
               ${element[0]}
             </div>
-            <div class="col">
+            <div class="col-2">
               ${element[1] + " " + element[2]}
             </div>
-            <div class="col">
+            <div class="col-4">
               ${element[4] + " - " + element[3]}
             </div>
-            <div class="col">
+            <div class="col-2">
               ${element[5]}
             </div>
-            <div class="col">
+            <div class="col-1">
               ${element[6]}
             </div>
           </div>
@@ -420,6 +458,142 @@
         });
       });
   });
+
+  // Seleccionar estudiantes
+  const btnFromSeleccion = document.getElementById("form-seleccion");
+  btnFromSeleccion.addEventListener("click", async (event) => {
+    const radios = [];
+    radios[0] = document.querySelectorAll('input[name="Clarinete"]');
+    radios[1] = document.querySelectorAll('input[name="Flauta"]');
+    radios[2] = document.querySelectorAll('input[name="Timbal"]');
+    radios[3] = document.querySelectorAll('input[name="Trombon"]');
+    radios[4] = document.querySelectorAll('input[name="Violin"]');
+    let listaActivacion = [];
+    let listaCodigos = [];
+
+    let contador = 0;
+    radios.forEach((grupo) => {
+      grupo.forEach((radio) => {
+        if (radio.checked) {
+          listaActivacion[contador] = true;
+          listaCodigos[contador] = radio.value;
+        }
+      });
+      contador++;
+    });
+
+    if (listaActivacion.filter((element) => element == true).length == 5) {
+      // Añadir estudiantes
+      await listaCodigos.forEach(async (codigo) => {
+        let headersList = {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+        };
+
+        let bodyContent = JSON.stringify({
+          cod: codigo,
+          cal: localStorage.getItem("actividadId"),
+        });
+
+        console.log(bodyContent);
+
+        let response = await fetch("http://localhost:3000/estudiante/agregar", {
+          method: "POST",
+          body: bodyContent,
+          headers: headersList,
+        })
+          .then((response) => response.text())
+          .then((res) => console.log("Peticion enviada"));
+      });
+
+      inactivar(3, 0);
+      location.reload();
+    }
+  });
+
+  // --------------- ASISTENCIA ---------------------
+  // Mostrar estudiantes
+  const btnAsistencia = document.getElementById("btn-asistencia");
+  btnAsistencia.addEventListener("click", async () => {
+    await fetch("http://localhost:3000/estudiante/participantes")
+      .then((response) => response.json())
+      .then((response) => {
+        const container = document.getElementById("participantes");
+        container.innerHTML = "";
+        response.rows.forEach((element) => {
+          container.innerHTML += `
+          <div class="row align-items-center px-5 mx-5 my-3">
+            <div class="col-3"></div>
+            <div class="col-1">
+              <input class="form-check-input" type="checkbox" name="asis" value="${
+                element[0]
+              }"> 
+            </div>
+            <div class="col-2">
+              ${element[0]}
+            </div>
+            <div class="col-3">
+              ${element[1] + " " + element[2]}
+            </div>
+            <div class="col-3"></div>
+          </div>
+          `;
+        });
+      });
+  });
+
+  // Tomar asistencia
+  const btnFormAsistencia = document.getElementById("form-asistencia");
+  btnFormAsistencia.addEventListener("click", async (event) => {
+    const boxs = document.querySelectorAll('input[name="asis"]');
+    boxs.forEach(async (box) => {
+      if (box.checked) {
+        let headersList = {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+        };
+
+        let bodyContent = JSON.stringify({
+          cod: box.value,
+          cal: localStorage.getItem("actividadId"),
+          tipo: localStorage.getItem("actividadTipo"),
+        });
+
+        console.log(bodyContent);
+
+        let response = await fetch(
+          "http://localhost:3000/estudiante/asistencia",
+          {
+            method: "POST",
+            body: bodyContent,
+            headers: headersList,
+          }
+        )
+          .then((response) => response.text())
+          .then((res) => console.log("Peticion enviada"));
+      }
+    });
+
+    inactivar(
+      localStorage.getItem("actividadTipo"),
+      localStorage.getItem("actividadId")
+    );
+    location.reload();
+  });
+
+  // Llenar todo
+  const btnLlenarAsistencia = document.getElementById("form-llenar-asistencia");
+  btnLlenarAsistencia.addEventListener("click", async (event) => {
+    await fetch("http://localhost:3000/estudiante/llenado")
+      .then((response) => response.text())
+      .then((response) => console.log(response));
+    location.reload();
+  });
+
+  // ------------- Liquidaciín ----------------
+  
+
+
 </script>
 
 <%- include('partials/endHeader') %>

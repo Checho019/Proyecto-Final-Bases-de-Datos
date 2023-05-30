@@ -62,7 +62,12 @@ const agregarCalendario = async (calendario,fechaI, fechaF) => {
     await db.ejecutarQuery(query, [calendario,id,fechaI,fechaF])
 }
 
-// 
+// Ninguno activo
+const ningunoActivo = async () => {
+    let query = 'SELECT consecalendario FROM calendario WHERE lower(idestado) = \'activo\' '
+    const resultado = await db.ejecutarQuery(query,[])
+    return resultado.rows.length == 0
+}
 
 module.exports = {
     obtenerCalendario,
@@ -70,5 +75,6 @@ module.exports = {
     esActivo,
     inactivarCalendario,
     agregarCalendario,
-    retirarHoras
+    retirarHoras,
+    ningunoActivo
 }

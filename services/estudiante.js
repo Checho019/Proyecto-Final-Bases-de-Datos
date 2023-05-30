@@ -1,4 +1,5 @@
 const db = require('../utils/dbController')
+const calendario = require('../services/calendario')
 
 const run = async () => {
     await db.inicializar();
@@ -31,10 +32,10 @@ const obtenerEstudiantes = async () => {
 }
 
 // Agregar estudiante a participantes (Seleccion)
-const EstudianteParticipa = async (codigo,consCalen) => {
+const estudianteParticipa = async (codigo,consCalen) => {
     id++
     let query = 'INSERT INTO participacionestudiante '
-    + 'VALUES (:id,3,2,:consCalen,:codigo)'
+    + 'VALUES (:id,3,3,:consCalen,:codigo)'
     return await db.ejecutarQuery(query,[id,consCalen,codigo])
 }
 
@@ -52,7 +53,8 @@ const asistencia = async (codigo,consCalen,tipoCal) => {
 const participantes = async () => {
     let query = 'SELECT DISTINCT P.codestudiante, nombre, apellido '
     + 'FROM participacionestudiante P '
-    + 'JOIN estudiante E ON P.codestudiante = E.codestudiante'
+    + 'JOIN estudiante E ON P.codestudiante = E.codestudiante ' 
+    + 'ORDER BY P.codestudiante'
     const result = await db.ejecutarQuery(query,[])
     return result;
 }
@@ -72,7 +74,8 @@ const llenarTodaAsistencia = async () => {
     const part = await participantes();
     ef.rows.map(async row => {
         part.rows.forEach(async est => {
-            const res = await asistencia(est[0], row[1], row[0])
+            await asistencia(est[0], row[1], row[0])
+            await calendario.inactivarCalendario(row[0],row[1])
         })
     })
 }
@@ -92,7 +95,7 @@ const estudiantesElectiva = async () => {
 
 module.exports = {
     obtenerEstudiantes,
-    EstudianteParticipa,
+    estudianteParticipa,
     participantes,
     asistencia,
     llenarTodaAsistencia,

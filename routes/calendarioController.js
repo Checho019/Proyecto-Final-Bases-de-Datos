@@ -35,4 +35,8 @@ router.get('/retirarhoras', async (req,res) => {
     res.json(result)
 })
 
+router.get('/ningunoactivo', async (req,res) => {
+    res.json(await calendar.ningunoActivo())
+})
+
 module.exports = router;
