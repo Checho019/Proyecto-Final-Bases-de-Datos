@@ -22,7 +22,7 @@ const sendEmail = async (lista) => {
         var raw = JSON.stringify({
             "sender": {
                 "name": "Sergio Duarte",
-                "email": "sergioduarte20013@gmail.com"
+                "email": "alexmason@gmail.com"
             },
             "to": [
                 {
